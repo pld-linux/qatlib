@@ -1,0 +1,22 @@
+--- qatlib-21.11.0/quickassist/utilities/osal/src/linux/user_space/OsalUsrKrnProxy.c.orig	2022-02-17 18:12:05.394337026 +0100
++++ qatlib-21.11.0/quickassist/utilities/osal/src/linux/user_space/OsalUsrKrnProxy.c	2022-02-17 18:12:12.814296829 +0100
+@@ -73,10 +73,6 @@
+ 
+ #define MMAP_FLAGS MAP_PRIVATE
+ 
+-#ifndef __off_t
+-typedef off_t __off_t;
+-#endif
+-
+ static int fd = -1;
+ static int fdp = -1;
+ static int strict_node = 1;
+@@ -925,7 +921,7 @@ OSAL_PUBLIC void *osalMemAllocPage(UINT3
+                                PROT_READ | PROT_WRITE,
+                                MAP_PRIVATE,
+                                fdp,
+-                               (__off_t)pMemInfo->id * getpagesize());
++                               (off_t)pMemInfo->id * getpagesize());
+     if (pMemInfo->virt_addr == MAP_FAILED)
+     {
+         osalStdLog("Errno: %d\n", errno);
