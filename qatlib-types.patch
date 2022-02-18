@@ -20,3 +20,14 @@
      if (pMemInfo->virt_addr == MAP_FAILED)
      {
          osalStdLog("Errno: %d\n", errno);
+--- qatlib-21.11.0/quickassist/lookaside/access_layer/src/qat_direct/common/include/adf_platform_common.h.orig	2021-11-10 12:34:59.000000000 +0100
++++ qatlib-21.11.0/quickassist/lookaside/access_layer/src/qat_direct/common/include/adf_platform_common.h	2022-02-18 19:03:24.647814496 +0100
+@@ -176,7 +176,7 @@
+  *     xx refers to arch, i.e.64bit or 32bit
+  *     yy refers to number of bytes copied from src to dst, i.e. 64 or 128 bytes
+  */
+-#ifdef __x86_64__
++#ifdef __LP64__
+ #define adf_memcpy64_64(dst, src)                                              \
+     do                                                                         \
+     {                                                                          \
