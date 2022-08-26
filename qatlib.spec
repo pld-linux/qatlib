@@ -1,3 +1,4 @@
+# NOTE: 22.07.0 no longer supports 32-bit ABI
 Summary:	Intel QuickAssist Technology library
 Summary(pl.UTF-8):	Biblioteka Intel QuickAssist Technology
 Name:		qatlib
