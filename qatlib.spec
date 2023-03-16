@@ -1,19 +1,28 @@
-# NOTE: 22.07.0 no longer supports 32-bit ABI
+#
+# Conditional build:
+%bcond_without	asm		# fast CRC in assembler
+%bcond_without	static_libs	# static libraries
+
+# quickassist/lookaside/access_layer/src/common/compression/{crc32_gzip_refl_by8,crc64_ecma_norm_by8}.S is 64-bit only
+%ifnarch %{x8664}
+%undefine	with_asm
+%endif
 Summary:	Intel QuickAssist Technology library
 Summary(pl.UTF-8):	Biblioteka Intel QuickAssist Technology
 Name:		qatlib
-Version:	21.11.0
+Version:	22.07.2
 Release:	1
 License:	BSD
 Group:		Libraries
 #Source0Download: https://github.com/intel/qatlib/releases
 Source0:	https://github.com/intel/qatlib/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	3e47ec666c1e0499c42558505a80e054
+# Source0-md5:	8c1a2fcf808f8550f21db6342cd5561d
 Patch0:		%{name}-types.patch
 URL:		https://github.com/intel/qatlib
 BuildRequires:	autoconf >= 2.69
 BuildRequires:	automake >= 1:1.11
 BuildRequires:	libtool >= 2:2.4
+%{?with_asm:BuildRequires:	nasm}
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
 BuildRequires:	systemd-devel
@@ -60,6 +69,18 @@ Header files for QATlib libraries.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek QATlib.
 
+%package static
+Summary:	Static QATlib libraries
+Summary(pl.UTF-8):	Statyczne biblioteki QATlib
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description static
+Static QATlib libraries.
+
+%description static -l pl.UTF-8
+Statyczne biblioteki QATlib.
+
 %package tools
 Summary:	Tools to initialize and manage QAT devices
 Summary(pl.UTF-8):	Narzędzia do inicjowania i zarządzania urządzeniami QAT
@@ -86,7 +107,9 @@ Narzędzia do inicjowania i zarządzania urządzeniami QAT.
 %{__autoheader}
 %{__automake}
 %configure \
+	%{!?with_asm:--disable-fast-crc-in-assembler} \
 	--disable-silent-rules
+	%{!?with_static_libs:--disable-static}
 
 %{__make}
 
@@ -95,6 +118,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
+
+# obsoleted by pkgconfig
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/lib*.la
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -114,7 +140,7 @@ fi
 %defattr(644,root,root,755)
 %doc INSTALL LICENSE README.md
 %attr(755,root,root) %{_libdir}/libqat.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libqat.so.2
+%attr(755,root,root) %ghost %{_libdir}/libqat.so.3
 %attr(755,root,root) %{_libdir}/libusdm.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libusdm.so.0
 
@@ -122,9 +148,17 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libqat.so
 %attr(755,root,root) %{_libdir}/libusdm.so
-%{_libdir}/libqat.la
-%{_libdir}/libusdm.la
 %{_includedir}/qat
+%{_pkgconfigdir}/libqat.pc
+%{_pkgconfigdir}/libusdm.pc
+%{_pkgconfigdir}/qatlib.pc
+
+%if %{with static_libs}
+%files static
+%defattr(644,root,root,755)
+%{_libdir}/libqat.a
+%{_libdir}/libusdm.a
+%endif
 
 %files tools
 %defattr(644,root,root,755)
