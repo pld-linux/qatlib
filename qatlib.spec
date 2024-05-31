@@ -10,13 +10,13 @@
 Summary:	Intel QuickAssist Technology library
 Summary(pl.UTF-8):	Biblioteka Intel QuickAssist Technology
 Name:		qatlib
-Version:	23.11.0
+Version:	24.02.0
 Release:	1
 License:	BSD
 Group:		Libraries
 #Source0Download: https://github.com/intel/qatlib/releases
 Source0:	https://github.com/intel/qatlib/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	b9220c0a97dab26c763e5644fde98791
+# Source0-md5:	6c55525dd85bd9123bfcb05bf59f4c51
 Patch0:		%{name}-types.patch
 URL:		https://github.com/intel/qatlib
 BuildRequires:	autoconf >= 2.69
