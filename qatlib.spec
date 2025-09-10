@@ -2,6 +2,7 @@
 # Conditional build:
 %bcond_without	asm		# fast CRC in assembler
 %bcond_without	static_libs	# static libraries
+%bcond_without	systemd		# systemd
 
 # quickassist/lookaside/access_layer/src/common/compression/{crc32_gzip_refl_by8,crc64_ecma_norm_by8}.S is 64-bit only
 %ifnarch %{x8664}
@@ -25,7 +26,7 @@ BuildRequires:	libtool >= 2:2.4
 %{?with_asm:BuildRequires:	nasm}
 BuildRequires:	openssl-devel
 BuildRequires:	pkgconfig
-BuildRequires:	systemd-devel
+%{?with_systemd:BuildRequires:	systemd-devel}
 # x86_64-specific hardware, allow userspace libs for all ABIs
 ExclusiveArch:	%{ix86} %{x8664} x32
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -108,8 +109,9 @@ Narzędzia do inicjowania i zarządzania urządzeniami QAT.
 %{__automake}
 %configure \
 	%{!?with_asm:--disable-fast-crc-in-assembler} \
-	--disable-silent-rules
-	%{!?with_static_libs:--disable-static}
+	--disable-silent-rules \
+	%{!?with_static_libs:--disable-static} \
+	%{!?with_systemd:--disable-systemd}
 
 %{__make}
 
@@ -164,6 +166,8 @@ fi
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_sbindir}/qat_init.sh
 %attr(755,root,root) %{_sbindir}/qatmgr
+%if %{with systemd}
 %{systemdunitdir}/qat.service
+%endif
 %{_mandir}/man8/qat_init.sh.8*
 %{_mandir}/man8/qatmgr.8*
